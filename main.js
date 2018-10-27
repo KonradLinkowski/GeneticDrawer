@@ -1,19 +1,18 @@
 const canvas = document.querySelector('#genetic-canvas')
-const ctx = canvas.getContext('2d')
 const image = document.querySelector('#genetic-image')
-const helpCanvas = document.createElement('canvas')
-const helpContext = helpCanvas.getContext('2d')
-
 const matchSpan = document.querySelector('#match_percentage')
 
-resizeCanvas(image.width, image.height)
-
+const ctx = canvas.getContext('2d')
+const helpCanvas = document.createElement('canvas')
+const helpContext = helpCanvas.getContext('2d')
 const mainImageData = getImageData(image)
+
+resizeCanvas(image.width, image.height)
 
 genetic()
 
 function genetic() {
-  const maxDiff = mainImageData.data.length * 255
+  const maxDiff = mainImageData.width * mainImageData.height * 4 * 255
   const olds = new Array(200)
   const news = new Array(200)
   let theBest = olds[0]
@@ -50,9 +49,7 @@ function genetic() {
       news[i].imageData = imgData
       news[i].fitness = calcFitness(mainImageData.data, imgData.data)
     }
-    news.sort(sortFitness)
-    olds.sort(sortFitness)
-    const bests = news.slice(0, 5).concat(olds.slice(0, 5))
+    const bests = [...findXBest(olds, 5), ...findXBest(news, 5)]
     bests.sort(sortFitness)
     theBest = bests[0]
     for (let i = 10; i < olds.length; i++) {
@@ -67,12 +64,34 @@ function sortFitness(a, b) {
   return a.fitness - b.fitness
 }
 
+function findXBest(arr, x) {
+  if (arr.length < x) throw new Error('Array length must be greater than x.')
+  const bests = []
+  const indexes = []
+  for (let c = 0; c < x; c++) {  
+    let min = { fitness: Number.MAX_SAFE_INTEGER }
+    let minIndex = 0
+    for (let i = 0; i < arr.length; i++) {
+      if (indexes.includes(i)) continue
+      if (arr[i].fitness < min.fitness) {
+        min = arr[i]
+        minIndex = i
+      }
+    }
+    bests.push(min)
+    indexes.push(minIndex)
+  }
+  return bests
+}
+
 function resizeCanvas(width, height) {
-  canvas.width = width
-  canvas.height = height
+  canvas.width = helpCanvas.width = width
+  canvas.height = helpCanvas.height = height
 }
 
 function getImageData(image) {
+  helpCanvas.width = image.width
+  helpCanvas.height = image.height
   helpContext.drawImage(image, 0, 0)
   const data = helpContext.getImageData(0, 0, image.width, image.height)
   helpContext.clearRect(0, 0, helpCanvas.width, helpCanvas.height)
@@ -81,8 +100,10 @@ function getImageData(image) {
 
 function calcFitness(original, current) {
   let sum = 0
-  for (let i = 0; i < original.length; i++) {
-    sum += Math.abs(original[i] - current[i])
+  for (let i = 0; i < original.length; i += 4) {
+    sum += Math.abs(original[i] - current[i]) // red
+      + Math.abs(original[i + 1] - current[i + 1]) // green
+      + Math.abs(original[i + 2] - current[i + 2]) // blue
   }
   return sum
 }
