@@ -4,22 +4,25 @@ const image = document.querySelector('#genetic-image')
 const helpCanvas = document.createElement('canvas')
 const helpContext = helpCanvas.getContext('2d')
 
-const offsprings = new Array(200)
+const matchSpan = document.querySelector('#match_percentage')
 
 resizeCanvas(image.width, image.height)
 
-const imageData = getImageData(image)
+const mainImageData = getImageData(image)
 
 genetic()
 
 function genetic() {
+  const maxDiff = mainImageData.data.length * 255
+  const offsprings = new Array(200)
+  const newoffsprings = offsprings
   for (let i = 0; i < offsprings.length; i++) {
     offsprings[i] = { imageData: new ImageData(image.width, image.height) }
   }
-  setInterval(iteration, 100)
-  function iteration() {
-    for (let i = 0; i < offsprings.length; i++) {
-      helpContext.putImageData(offsprings[i].imageData, 0, 0)
+  setInterval(iteration, 100, offsprings, newoffsprings)
+  function iteration(olds, news) {
+    for (let i = 0; i < olds.length; i++) {
+      helpContext.putImageData(olds[i].imageData, 0, 0)
       const color = getRandomColor()
       const coords = [
         getRandomInt(0, image.width),
@@ -35,18 +38,26 @@ function genetic() {
         color,
         coords
       )
-      offsprings[i].imageData = helpContext.getImageData(0, 0, image.width, image.height)
-      offsprings[i].fitness = calcFitness(imageData.data, offsprings[i].imageData.data)
+      const imgData = helpContext.getImageData(0, 0, image.width, image.height)
+      news[i].imageData = imgData
+      news[i].fitness = calcFitness(mainImageData.data, imgData.data)
     }
-    const sorted = offsprings.sort((a, b) => {
-      return a.fitness - b.fitness
-    })
-    ctx.putImageData(sorted[0].imageData, 0, 0)
-    console.log(sorted[0].fitness)
-    for (let i = 5; i < offsprings.length; i++) {
-      offsprings[i].imageData.data.set(offsprings[i % 5])
+    news.sort(sortFitness)
+    olds.sort(sortFitness)
+    const bests = news.slice(0, 5).concat(olds.slice(0, 5))
+    bests.sort(sortFitness)
+    const theBest = bests[0]
+    ctx.putImageData(theBest.imageData, 0, 0)
+    matchSpan.textContent = (100 * (1 - theBest.fitness / maxDiff)).toFixed(2)
+    for (let i = 10; i < offsprings.length; i++) {
+      offsprings[i].imageData = bests[i % 10].imageData
+      offsprings[i].fitness = bests[i % 10].fitness
     }
+  }
 }
+
+function sortFitness(a, b) {
+  return a.fitness - b.fitness
 }
 
 function resizeCanvas(width, height) {
