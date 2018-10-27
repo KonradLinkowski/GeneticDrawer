@@ -12,7 +12,7 @@ resizeCanvas(image.width, image.height)
 genetic()
 
 function genetic() {
-  const maxDiff = mainImageData.width * mainImageData.height * 4 * 255
+  const maxDiff = mainImageData.width * mainImageData.height * 3 * 255
   const olds = new Array(200)
   const news = new Array(200)
   let theBest = olds[0]
