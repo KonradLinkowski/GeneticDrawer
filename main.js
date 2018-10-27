@@ -14,8 +14,9 @@ genetic()
 
 function genetic() {
   const maxDiff = mainImageData.width * mainImageData.height * 3 * 255
-  const olds = new Array(200)
-  const news = new Array(200)
+  const popSize = 50
+  const olds = new Array(popSize)
+  const news = new Array(popSize)
   let theBest = olds[0]
   let generation = 0
   const defaultFit = calcFitness(mainImageData.data, new ImageData(image.width, image.height).data)
@@ -24,7 +25,7 @@ function genetic() {
     news[i] = { imageData: new ImageData(image.width, image.height), fitness: defaultFit }
   }
   setTimeout(iteration, 0)
-  setInterval(drawBest, 50)
+  setInterval(drawBest, 100)
   function drawBest() {
     genSpan.textContent = generation
     matchSpan.textContent = (100 * (1 - theBest.fitness / maxDiff)).toFixed(2)
