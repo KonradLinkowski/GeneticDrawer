@@ -16,12 +16,18 @@ function genetic() {
   const maxDiff = mainImageData.data.length * 255
   const olds = new Array(200)
   const news = new Array(200)
+  let theBest = olds[0]
   const defaultFit = calcFitness(mainImageData.data, new ImageData(image.width, image.height).data)
   for (let i = 0; i < olds.length; i++) {
     olds[i] = { imageData: new ImageData(image.width, image.height), fitness: defaultFit }
     news[i] = { imageData: new ImageData(image.width, image.height), fitness: defaultFit }
   }
-  setInterval(iteration, 100)
+  setTimeout(iteration, 0)
+  setInterval(drawBest, 10)
+  function drawBest() {
+    matchSpan.textContent = (100 * (1 - theBest.fitness / maxDiff)).toFixed(2)
+    ctx.putImageData(theBest.imageData, 0, 0)
+  }
   function iteration() {
     for (let i = 0; i < olds.length; i++) {
       helpContext.putImageData(olds[i].imageData, 0, 0)
@@ -48,13 +54,12 @@ function genetic() {
     olds.sort(sortFitness)
     const bests = news.slice(0, 5).concat(olds.slice(0, 5))
     bests.sort(sortFitness)
-    const theBest = bests[0]
-    ctx.putImageData(theBest.imageData, 0, 0)
-    matchSpan.textContent = (100 * (1 - theBest.fitness / maxDiff)).toFixed(2)
+    theBest = bests[0]
     for (let i = 10; i < olds.length; i++) {
       olds[i].imageData = bests[i % 10].imageData
       olds[i].fitness = bests[i % 10].fitness
     }
+    setTimeout(iteration, 0)
   }
 }
 
