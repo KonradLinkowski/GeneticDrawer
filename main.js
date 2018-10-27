@@ -14,13 +14,15 @@ genetic()
 
 function genetic() {
   const maxDiff = mainImageData.data.length * 255
-  const offsprings = new Array(200)
-  const newoffsprings = offsprings
-  for (let i = 0; i < offsprings.length; i++) {
-    offsprings[i] = { imageData: new ImageData(image.width, image.height) }
+  const olds = new Array(200)
+  const news = new Array(200)
+  const defaultFit = calcFitness(mainImageData.data, new ImageData(image.width, image.height).data)
+  for (let i = 0; i < olds.length; i++) {
+    olds[i] = { imageData: new ImageData(image.width, image.height), fitness: defaultFit }
+    news[i] = { imageData: new ImageData(image.width, image.height), fitness: defaultFit }
   }
-  setInterval(iteration, 100, offsprings, newoffsprings)
-  function iteration(olds, news) {
+  setInterval(iteration, 100)
+  function iteration() {
     for (let i = 0; i < olds.length; i++) {
       helpContext.putImageData(olds[i].imageData, 0, 0)
       const color = getRandomColor()
@@ -49,9 +51,9 @@ function genetic() {
     const theBest = bests[0]
     ctx.putImageData(theBest.imageData, 0, 0)
     matchSpan.textContent = (100 * (1 - theBest.fitness / maxDiff)).toFixed(2)
-    for (let i = 10; i < offsprings.length; i++) {
-      offsprings[i].imageData = bests[i % 10].imageData
-      offsprings[i].fitness = bests[i % 10].fitness
+    for (let i = 10; i < olds.length; i++) {
+      olds[i].imageData = bests[i % 10].imageData
+      olds[i].fitness = bests[i % 10].fitness
     }
   }
 }
