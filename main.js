@@ -6,9 +6,9 @@ const genSpan = document.querySelector('#gen_count')
 const ctx = canvas.getContext('2d')
 const helpCanvas = document.createElement('canvas')
 const helpContext = helpCanvas.getContext('2d')
-const mainImageData = getImageData(image)
 
 resizeCanvas(image.width, image.height)
+const mainImageData = getImageData(image)
 
 genetic()
 
