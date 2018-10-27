@@ -1,6 +1,7 @@
 const canvas = document.querySelector('#genetic-canvas')
 const image = document.querySelector('#genetic-image')
 const matchSpan = document.querySelector('#match_percentage')
+const genSpan = document.querySelector('#gen_count')
 
 const ctx = canvas.getContext('2d')
 const helpCanvas = document.createElement('canvas')
@@ -16,18 +17,21 @@ function genetic() {
   const olds = new Array(200)
   const news = new Array(200)
   let theBest = olds[0]
+  let generation = 0
   const defaultFit = calcFitness(mainImageData.data, new ImageData(image.width, image.height).data)
   for (let i = 0; i < olds.length; i++) {
     olds[i] = { imageData: new ImageData(image.width, image.height), fitness: defaultFit }
     news[i] = { imageData: new ImageData(image.width, image.height), fitness: defaultFit }
   }
   setTimeout(iteration, 0)
-  setInterval(drawBest, 10)
+  setInterval(drawBest, 50)
   function drawBest() {
+    genSpan.textContent = generation
     matchSpan.textContent = (100 * (1 - theBest.fitness / maxDiff)).toFixed(2)
     ctx.putImageData(theBest.imageData, 0, 0)
   }
   function iteration() {
+    generation += 1
     for (let i = 0; i < olds.length; i++) {
       helpContext.putImageData(olds[i].imageData, 0, 0)
       const color = getRandomColor()
@@ -103,6 +107,14 @@ function getImageData(image) {
   const data = helpContext.getImageData(0, 0, image.width, image.height)
   helpContext.clearRect(0, 0, helpCanvas.width, helpCanvas.height)
   return data
+}
+
+function mutate(m, t) {
+  const n = []
+  for (let i = 0; i < m.length; i++) {
+    n.push(Math.random() < 0.5 ? m[i] : t[i])
+  }
+  return n
 }
 
 function calcFitness(original, current) {
