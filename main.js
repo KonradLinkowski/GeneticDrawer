@@ -40,6 +40,13 @@ function genetic() {
         getRandomInt(0, image.height)
       ]
 
+      // drawCircle(
+      //   helpContext,
+      //   color,
+      //   getRandomInt(0, image.width),
+      //   getRandomInt(0, image.height),
+      //   getRandomFloat(1, 100)
+      // )
       drawShape(
         helpContext,
         color,
@@ -108,6 +115,14 @@ function calcFitness(original, current) {
   return sum
 }
 
+function drawCircle(ctx, color, x, y, radius) {
+  ctx.beginPath()
+  ctx.arc(x, y, radius, 0, Math.PI * 2)
+  ctx.closePath()
+  ctx.fillStyle = color
+  ctx.fill()
+}
+
 function drawShape(ctx, color, coords) {
   // the triangle
   ctx.beginPath()
@@ -133,4 +148,8 @@ function getRandomColor() {
 
 function getRandomInt(min, max) {
   return Math.floor(Math.random() * (max - min)) + min;
+}
+
+function getRandomFloat(min, max) {
+  return Math.random() * (max - min) + min;
 }
