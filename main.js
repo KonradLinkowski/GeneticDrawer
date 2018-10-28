@@ -44,19 +44,21 @@ function genetic() {
         getRandomInt(0, image.width),
         getRandomInt(0, image.height)
       ]
-
-      // drawCircle(
-      //   helpContext,
-      //   color,
-      //   getRandomInt(0, image.width),
-      //   getRandomInt(0, image.height),
-      //   getRandomFloat(1, 100)
-      // )
-      drawShape(
-        helpContext,
-        color,
-        coords
-      )
+      if (Math.random() < 0.5) {
+        drawCircle(
+          helpContext,
+          color,
+          getRandomInt(0, image.width),
+          getRandomInt(0, image.height),
+          getRandomFloat(1, Math.min(image.width / 2, image.height / 2))
+        )
+      } else {
+        drawShape(
+          helpContext,
+          color,
+          coords
+        )
+      }
       const imgData = helpContext.getImageData(0, 0, image.width, image.height)
       news[i].imageData = imgData
       news[i].fitness = calcFitness(mainImageData.data, imgData.data)
