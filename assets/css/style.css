@@ -1,19 +1,17 @@
-* {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
 }
 body {
-  padding: 0;
+  padding: 10px;
   margin: 0;
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
+  height: 100vh;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  background-color: #f7f7f7;
+  background-color: #fdfdfd;
   font-family: 'Arial', sans-serif;
 }
 
@@ -22,24 +20,19 @@ body {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  flex-direction: row;
 }
 
 .image {
+  box-sizing: content-box;
   border: 2px solid #c6ccd6;
   margin: 2px;
   max-height: 200px;
   display: flex;
 }
 
-*,
-*:before,
-*:after {
-  box-sizing: border-box;
-}
-
 .container {
   width: 45rem;
+  max-width: 100%;
   margin: 10px auto;
   background: #ffffff;
   padding: 1rem;
@@ -63,7 +56,7 @@ body {
 }
 
 .dropzone .dropzone-container {
-	padding: 2rem 0;
+	padding: 2rem;
 	width: 100%;
 	height: 100%;
 	position: relative;
@@ -77,6 +70,7 @@ body {
 
 .dropzone .dropzone-container .dropzone-title {
   padding-top: 1.5rem;
+  text-align: center;
 }
 
 .dropzone .dropzone-container .browse {
