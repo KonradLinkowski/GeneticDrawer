@@ -142,9 +142,6 @@ function genetic() {
     for (let i = 10; i < olds.length; i++) {
       olds[i].imageData = bests[i % 10].imageData;
       olds[i].fitness = bests[i % 10].fitness;
-      if (!olds[i].imageData) {
-        debugger
-      }
     }
     setTimeout(iteration, 0)
   }
