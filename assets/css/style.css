@@ -1,0 +1,136 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+body {
+  padding: 10px;
+  margin: 0;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: #fdfdfd;
+  font-family: 'Arial', sans-serif;
+}
+
+.image-container {
+  margin: 0 auto;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.image {
+  box-sizing: content-box;
+  border: 2px solid #c6ccd6;
+  margin: 2px;
+  max-height: 200px;
+  display: flex;
+}
+
+.container {
+  width: 45rem;
+  max-width: 100%;
+  margin: 10px auto;
+  background: #ffffff;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 0.75rem 1.5rem rgba(19, 19, 19, 0.03);
+}
+
+.container p {
+	text-align: center;
+	display: block;
+}
+
+.dropzone {
+	opacity: 1;
+	border: 2px dotted #c6ccd6;
+	border-radius: 0.5rem;
+}
+
+.dropzone.highlight {
+	border: 2px dotted #007bff;
+}
+
+.dropzone .dropzone-container {
+	padding: 2rem;
+	width: 100%;
+	height: 100%;
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	color: #8c96a8;
+	z-index: 20;
+}
+
+.dropzone .dropzone-container .dropzone-title {
+  padding-top: 1.5rem;
+  text-align: center;
+}
+
+.dropzone .dropzone-container .browse {
+  text-decoration: underline;
+  color: #007bff;
+  cursor: pointer;
+}
+
+.dropzone .file-input {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  opacity: 0;
+  visibility: hidden;
+  cursor: pointer;
+}
+
+.file-icon {
+  position: relative;
+  width: 4rem;
+  height: 5.25rem;
+  padding: 0.625rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 500;
+  font-size: 2rem;
+  color: #007bff;
+}
+
+.file-icon, .file-icon:before, .file-icon:after {
+  background-color: #ffffff;
+  border-radius: 0.25rem;
+  border: 0.125rem solid #b8bec9;
+}
+
+.file-icon:before, .file-icon:after {
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border: 0.125rem solid #ccd0d8;
+}
+
+.file-icon:before {
+  left: -0.625rem;
+  top: 0.5rem;
+  z-index: -1;
+}
+
+.file-icon:after {
+  top: -0.25rem;
+  right: -0.25rem;
+  left: auto;
+  width: 1.25rem;
+  height: 1.25rem;
+  border-radius: 0.25rem;
+  border-width: 0.625rem;
+  border-style: solid;
+  border-color: #f9f9fb #f9f9fb #b8bec9 #b8bec9;
+}

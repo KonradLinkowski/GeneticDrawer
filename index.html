@@ -5,15 +5,29 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>Genetic Drawer</title>
-  <link rel="stylesheet" href="style.css">
+	<link rel="stylesheet" href="assets/css/style.css">
+	<link rel="icon" type="image/png" href="assets/img/favicon.png">
 </head>
 <body>
-  <div class="image-container">
-    <img id="genetic-image" class="image" src="sunflower.jpg" alt="Copied image">
-    <canvas id="genetic-canvas" class="image"></canvas>
-  </div>
-  <p>Current match: <span id="match_percentage"></span>%</p>
-  <p>Generation: <span id="gen_count"></span></p>
-  <script src="main.js"></script>
+	<div class="container">
+		<div class="image-container">
+			<img id="genetic-image" class="image" src="assets/img/sunflower.jpg" alt="Copied image">
+			<canvas id="genetic-canvas" class="image"></canvas>
+		</div>
+		<p>Current match: <span id="match_percentage"></span>%</p>
+		<p>Generation: <span id="gen_count"></span></p>
+	</div>
+	<div class="container">
+		<div class="dropzone" id="dropzone">
+			<label for="files" class="dropzone-container">
+				<div class="file-icon">+</div>
+				<div class="dropzone-title">
+					Drag and drop your image or <span class="browse">browse</span> for an image
+				</div>
+			</label>
+			<input id="files" name="files[]" type="file" class="file-input" accept="image/x-png,image/jpeg">
+		</div>
+	</div>
+	<script src="assets/js/main.js" type="module"></script>
 </body>
 </html>

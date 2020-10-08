@@ -1,5 +1,6 @@
 # Genetic Drawer
-![demo](demo.gif)
+![demo](assets/img/demo.gif)
+
 Uses genetic algorithm to recreate the image using triangles and circles
 
 ## Live demo
