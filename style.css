@@ -14,6 +14,22 @@ body {
   justify-content: center;
   align-items: center;
 }
+header{
+  
+  height: 10%;
+  width: 100%;
+  background-color: transparent;
+  font-family: 'Sansita Swashed', cursive;
+
+}
+header h1{
+  margin-left: 16px;
+}
+main{
+  height: 80%;
+  width: 100%;
+  text-align: center;
+}
 
 .image-container {
   margin: 0 auto;
@@ -27,4 +43,21 @@ body {
   /* height: 100%; */
   border: 2px solid black;
   margin: 2px;
+}
+.relative{
+  position: relative;
+  top:20%;
+}
+
+footer{
+  
+  background-color:lightgray;
+  height:10%;
+  width:100%;
+  color: white;
+
+}
+a{
+  text-decoration: none;
+  margin-left: 16px;
 }

@@ -6,14 +6,29 @@
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>Genetic Drawer</title>
   <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Sansita+Swashed:wght@700&display=swap" rel="stylesheet">
 </head>
 <body>
-  <div class="image-container">
+   
+  <header >
+      <h1>GenticDrawer</h1>
+  </header>
+
+  <main>
+
+  <div class="image-container relative">
     <img id="genetic-image" class="image" src="sunflower.jpg" alt="Copied image">
     <canvas id="genetic-canvas" class="image"></canvas>
   </div>
-  <p>Current match: <span id="match_percentage"></span>%</p>
-  <p>Generation: <span id="gen_count"></span></p>
+  <p class="relative">Current match: <span id="match_percentage"></span>%</p>
+  <p class="relative">Generation: <span id="gen_count"></span></p>
   <script src="main.js"></script>
+
+  </main>
+
+  <footer>
+      <h4><a href="https://github.com/KonradLinkowski/GeneticDrawer">Source Code</a></h4>
+  </footer>
+
 </body>
 </html>
