@@ -1,5 +1,5 @@
 const canvas = document.querySelector("#genetic-canvas");
-let image = document.getElementById("genetic-image");
+const image = document.getElementById("genetic-image");
 const matchSpan = document.querySelector("#match_percentage");
 const genSpan = document.querySelector("#gen_count");
 
@@ -10,12 +10,9 @@ const helpContext = helpCanvas.getContext("2d");
 resizeCanvas(image.width, image.height);
 let mainImageData = getImageData(image);
 
-let iteration = null;
-let drawBestIteration = null;
-
 genetic();
 
-let dropArea = document.getElementById("dropzone");
+const dropArea = document.getElementById("dropzone");
 
 ["dragenter", "dragover", "dragleave", "drop"].forEach((eventName) => {
   dropArea.addEventListener(eventName, preventDefaults, false);
@@ -29,107 +26,113 @@ let dropArea = document.getElementById("dropzone");
 });
 
 dropArea.addEventListener("drop", handleDrop, false);
+dropArea.addEventListener("input", handleChange, false);
 
 function preventDefaults(e) {
   e.preventDefault();
   e.stopPropagation();
 }
 
-function highlight(e) {
+function highlight() {
   dropArea.classList.add("highlight");
 }
 
-function unhighlight(e) {
+function unhighlight() {
   dropArea.classList.remove("highlight");
 }
 
-function handleDrop(e) {
-  const dt = e.dataTransfer;
-  const file = dt.files;
+function handleChange(e) {
+  handleFiles(e.target.files)
+}
 
-  handleFiles(file);
+function handleDrop({ dataTransfer }) {
+  handleFiles(dataTransfer.files);
 }
 
 function handleFiles(file) {
-  if (file.length > 1) {
-    alert("Only 1 image can be used");
-  } else {
-    let reader = new FileReader();
-	reader.readAsDataURL(file[0]);
-	reader.onloadend = function () {
-		image.src = reader.result;
-		image.onload = function() {
-			resizeCanvas(image.width, image.height);
-			mainImageData = getImageData(image);
-			genetic();
-		}
-	};
+  if (file.length === 0) {
+    console.error('No file provided');
+    return
   }
+  const reader = new FileReader();
+  reader.addEventListener('loadend', () => {
+    const tempImage = new Image();
+    tempImage.addEventListener('load', () => {
+      const { width, height } = tempImage;
+      image.addEventListener('load', () => {
+        resizeCanvas(width, height);
+        mainImageData = getImageData(tempImage);
+        genetic();
+      });
+      image.src = reader.result;
+    });
+    tempImage.src = reader.result;
+  });
+  reader.readAsDataURL(file[0]);
 }
 
 function genetic() {
-  const maxDiff = mainImageData.width * mainImageData.height * 3 * 255;
+  const { width, height } = mainImageData
+  const maxDiff = width * height * 3 * 255;
   const popSize = 50;
-  const olds = new Array(popSize);
-  const news = new Array(popSize);
-  let theBest = olds[0];
-  let generation = 0;
-  
-  if(drawBestIteration !== null) {
-	clearInterval(drawBestIteration);
-	drawBestIteration = null;
-  }
   
   const defaultFit = calcFitness(
     mainImageData.data,
-    new ImageData(image.width, image.height).data
+    new ImageData(width, height).data
   );
   
-  for (let i = 0; i < olds.length; i++) {
-    olds[i] = {
-      imageData: new ImageData(image.width, image.height),
-      fitness: defaultFit
-    };
-    news[i] = {
-      imageData: new ImageData(image.width, image.height),
-      fitness: defaultFit
-    };
+  const olds = Array(popSize).fill(0).map(() => ({
+    imageData: new ImageData(width, height),
+    fitness: defaultFit,
+  }));
+  const news = Array(popSize).fill(0).map(() => ({
+    imageData: new ImageData(width, height),
+    fitness: defaultFit,
+  }));
+
+  let theBest = olds[0];
+
+  let generation = 0;
+
+  setTimeout(iteration, 0)
+  requestAnimationFrame(drawLoop)
+
+  function drawLoop() {
+    drawBest();
+    requestAnimationFrame(drawLoop);
   }
-  
-  iteration();
-  drawBestIteration = setInterval(drawBest, 100);
-  
+
   function drawBest() {
     genSpan.textContent = generation;
     matchSpan.textContent = (100 * (1 - theBest.fitness / maxDiff)).toFixed(2);
     ctx.putImageData(theBest.imageData, 0, 0);
   }
-  
+
   function iteration() {
     generation += 1;
     for (let i = 0; i < olds.length; i++) {
       helpContext.putImageData(olds[i].imageData, 0, 0);
       const color = getRandomColor();
-      const coords = [
-        getRandomInt(0, image.width),
-        getRandomInt(0, image.height),
-        getRandomInt(0, image.width),
-        getRandomInt(0, image.height),
-        getRandomInt(0, image.width),
-        getRandomInt(0, image.height)
-      ];
       if (Math.random() < 0.5) {
         drawCircle(
           helpContext,
           color,
-          getRandomInt(0, image.width),
-          getRandomInt(0, image.height),
-          getRandomFloat(1, Math.min(image.width / 2, image.height / 2))
+          getRandomInt(0, width),
+          getRandomInt(0, height),
+          getRandomFloat(1, Math.min(width / 2, height / 2))
         );
       } else {
+        const coords = [
+          getRandomInt(0, width),
+          getRandomInt(0, height),
+          getRandomInt(0, width),
+          getRandomInt(0, height),
+          getRandomInt(0, width),
+          getRandomInt(0, height),
+        ];
         drawShape(helpContext, color, coords);
       }
-      const imgData = helpContext.getImageData(0, 0, image.width, image.height);
+      const imgData = helpContext.getImageData(0, 0, width, height);
       news[i].imageData = imgData;
       news[i].fitness = calcFitness(mainImageData.data, imgData.data);
     }
@@ -139,8 +142,11 @@ function genetic() {
     for (let i = 10; i < olds.length; i++) {
       olds[i].imageData = bests[i % 10].imageData;
       olds[i].fitness = bests[i % 10].fitness;
+      if (!olds[i].imageData) {
+        debugger
+      }
     }
-    setTimeout(iteration, 0);
+    setTimeout(iteration, 0)
   }
 }
 
@@ -150,28 +156,13 @@ function sortFitness(a, b) {
 
 function findXBest(arr, x) {
   if (arr.length < x) throw new Error("Array length must be greater than x.");
-  const bests = [];
-  const indexes = [];
-  for (let c = 0; c < x; c++) {
-    let min = { fitness: Number.MAX_SAFE_INTEGER };
-    let minIndex = 0;
-    for (let i = 0; i < arr.length; i++) {
-      if (indexes.includes(i)) continue;
-      if (arr[i].fitness < min.fitness) {
-        min = arr[i];
-        minIndex = i;
-      }
-    }
-    bests.push(min);
-    indexes.push(minIndex);
-  }
-  return bests;
+  return [...arr].sort((a, b) => a.fitness - b.fitness).slice(0, x)
 }
 
 function resizeCanvas(width, height) {
-	canvas.width = helpCanvas.width = width;
-	canvas.height = helpCanvas.height = height;
-	ctx.clearRect(0, 0, canvas.width, canvas.height);
+  canvas.width = helpCanvas.width = width;
+  canvas.height = helpCanvas.height = height;
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
 }
 
 function getImageData(image) {
