@@ -101,9 +101,10 @@ class ImageSample {
   crossover(partner) {
     let crossoverRate = Math.floor(Math.random() * partner.image.data.length);
     crossoverRate = crossoverRate > 0 ? crossoverRate : 0.5;
-
+    
     const parentsMutationRate = (this.mutationRate + partner.mutationRate) / 2;
     const parentsShapeRate = (this.shapeRate + partner.shapeRate) / 2;
+
     let offspringImage = this.image;
 
     const parentImageData1 = this.image.data;
@@ -203,7 +204,8 @@ class ImageSamplePopulation {
 
     const offsprings = this.imageSamples[bestParent].crossover(this.imageSamples[randomParent]);
 
-    this.imageSamples.splice(this.imageSamples.length - 2, 2, offsprings[0], offsprings[1]);
+    // this.imageSamples.splice(this.imageSamples.length - 2, 2, offsprings[0], offsprings[1]);
+    this.imageSamples.concat(offsprings);
 
     let perfectGeneration = true;
     for (let i = 0; i < this.imageSamples.length; i++) {
@@ -223,14 +225,14 @@ class ImageSamplePopulation {
       
       const self = this;
       setTimeout(function() {
-        const bestsImageSamples = [...self.findXBest(self.oldImageSamples, 5), ...self.findXBest(self.imageSamples, 5)];
+        const bestsImageSamples = [...self.findXBest(self.oldImageSamples, 5), ...self.findXBest(self.imageSamples, 15)];
         bestsImageSamples.sort(self.sortFitness);
 
         self.bestImageSample = bestsImageSamples[0];
 
-        for (let i = 10; i < self.imageSamples.length; i++) {
-          self.imageSamples[i].image = bestsImageSamples[i % 1].image;
-          self.imageSamples[i].fitness = bestsImageSamples[i % 1].fitness;
+        for (let i = 20; i < self.imageSamples.length; i++) {
+          self.imageSamples[i].image = bestsImageSamples[i % 2].image;
+          self.imageSamples[i].fitness = bestsImageSamples[i % 2].fitness;
         }
 
         self.populate();
