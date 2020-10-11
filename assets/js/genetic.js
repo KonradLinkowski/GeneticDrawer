@@ -235,6 +235,8 @@ class ImageSamplePopulation {
           self.imageSamples[i].fitness = bestsImageSamples[i % 2].fitness;
         }
 
+        self.imageSamples.concat(bestImageSamples);
+
         self.populate();
       }, 20);
     }
