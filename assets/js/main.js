@@ -71,6 +71,31 @@ function handleFiles(file) {
   reader.readAsDataURL(file[0]);
 }
 
+function downscaleImage() {
+  const maxWidth = 300;
+  const maxHeight = 300;
+  const width = image.width;
+  const height = image.height;
+
+  if(image.width < maxWidth && image.height < maxHeight){
+    return;
+  }
+
+  if (width > height) {
+    if (width > maxWidth) {
+        height *= maxWidth / width;
+        width = maxWidth;
+    }
+  } else {
+      if (height > maxHeight) {
+          width *= maxHeight / height;
+          height = maxHeight;
+      }
+  }
+  canvas.width = width;
+  canvas.height = height;
+}
+
 function genetic() {
   const { width, height } = mainImageData
   const maxDiff = width * height * 3 * 255;
