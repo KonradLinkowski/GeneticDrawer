@@ -1,16 +1,19 @@
-const canvas = document.querySelector("#genetic-canvas");
-const image = document.getElementById("genetic-image");
-const matchSpan = document.querySelector("#match_percentage");
-const genSpan = document.querySelector("#gen_count");
+const $canvas = document.querySelector("#genetic-canvas");
+const $image = document.getElementById("genetic-image");
+const $matchSpan = document.querySelector("#match_percentage");
+const $genSpan = document.querySelector("#gen_count");
 
-const ctx = canvas.getContext("2d");
+const ctx = $canvas.getContext("2d");
 const helpCanvas = document.createElement("canvas");
 const helpContext = helpCanvas.getContext("2d");
 
-resizeCanvas(image.width, image.height);
-let mainImageData = getImageData(image);
+let mainImageData = null;
 
-genetic();
+$image.addEventListener('load', () => {
+  handleLoad($image);
+});
+
+$image.src = './assets/img/sunflower.jpg'
 
 const dropArea = document.getElementById("dropzone");
 
@@ -56,63 +59,64 @@ function handleFiles(file) {
   }
   const reader = new FileReader();
   reader.addEventListener('loadend', () => {
-    const tempImage = new Image();
-    tempImage.addEventListener('load', () => {
-      const { width, height } = tempImage;
-      image.addEventListener('load', () => {
-        resizeCanvas(width, height);
-        mainImageData = getImageData(tempImage);
-        genetic();
-      });
-      image.src = reader.result;
-    });
-    tempImage.src = reader.result;
+    $image.src = reader.result;
   });
   reader.readAsDataURL(file[0]);
 }
 
-function downscaleImage() {
+function handleLoad(image) {
+  const newSize = getNewSize(image)
+  if (newSize) {
+    resizeImage(image, newSize.width, newSize.height)
+    return
+  }
+  resizeCanvas(image.naturalWidth, image.naturalHeight);
+  mainImageData = getImageData(image);
+  genetic();
+}
+
+function resizeImage(image, width, height) {
+  helpCanvas.width = width
+  helpCanvas.height = height
+  helpContext.drawImage(image, 0, 0, width, height)
+  image.src = helpCanvas.toDataURL()
+}
+
+function getNewSize(image) {
   const maxWidth = 300;
   const maxHeight = 300;
-  const width = image.width;
-  const height = image.height;
+  let { naturalWidth: width, naturalHeight: height } = image;
 
-  if(image.width < maxWidth && image.height < maxHeight){
-    return;
+  if (width <= maxWidth && height <= maxHeight){
+    return null
   }
 
   if (width > height) {
     if (width > maxWidth) {
-        height *= maxWidth / width;
-        width = maxWidth;
+      height *= maxWidth / width;
+      width = maxWidth;
     }
   } else {
-      if (height > maxHeight) {
-          width *= maxHeight / height;
-          height = maxHeight;
-      }
+    if (height > maxHeight) {
+      width *= maxHeight / height;
+      height = maxHeight;
+    }
   }
-  canvas.width = width;
-  canvas.height = height;
+  return { width, height };
 }
 
 function genetic() {
-  const { width, height } = mainImageData
-  const maxDiff = width * height * 3 * 255;
+  const { width, height, data } = mainImageData;
+  const maxDiff = getMaxDiff(data);
   const popSize = 50;
-  
-  const defaultFit = calcFitness(
-    mainImageData.data,
-    new ImageData(width, height).data
-  );
   
   const olds = Array(popSize).fill(0).map(() => ({
     imageData: new ImageData(width, height),
-    fitness: defaultFit,
+    fitness: maxDiff,
   }));
   const news = Array(popSize).fill(0).map(() => ({
     imageData: new ImageData(width, height),
-    fitness: defaultFit,
+    fitness: maxDiff,
   }));
 
   let theBest = olds[0];
@@ -128,8 +132,8 @@ function genetic() {
   }
 
   function drawBest() {
-    genSpan.textContent = generation;
-    matchSpan.textContent = (100 * (1 - theBest.fitness / maxDiff)).toFixed(2);
+    $genSpan.textContent = generation;
+    $matchSpan.textContent = (100 * (1 - theBest.fitness / maxDiff)).toFixed(2);
     ctx.putImageData(theBest.imageData, 0, 0);
   }
 
@@ -182,16 +186,16 @@ function findXBest(arr, x) {
 }
 
 function resizeCanvas(width, height) {
-  canvas.width = helpCanvas.width = width;
-  canvas.height = helpCanvas.height = height;
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  $canvas.width = helpCanvas.width = width;
+  $canvas.height = helpCanvas.height = height;
+  ctx.clearRect(0, 0, $canvas.width, $canvas.height);
 }
 
 function getImageData(image) {
-  helpCanvas.width = image.width;
-  helpCanvas.height = image.height;
+  helpCanvas.width = image.naturalWidth;
+  helpCanvas.height = image.naturalHeight;
   helpContext.drawImage(image, 0, 0);
-  const data = helpContext.getImageData(0, 0, image.width, image.height);
+  const data = helpContext.getImageData(0, 0, helpCanvas.width, helpCanvas.height);
   helpContext.clearRect(0, 0, helpCanvas.width, helpCanvas.height);
   return data;
 }
@@ -207,10 +211,24 @@ function mutate(m, t) {
 function calcFitness(original, current) {
   let sum = 0;
   for (let i = 0; i < original.length; i += 4) {
-    sum +=
-      Math.abs(original[i] - current[i]) + // red
-      Math.abs(original[i + 1] - current[i + 1]) + // green
-      Math.abs(original[i + 2] - current[i + 2]); // blue
+    const diff = Math.sqrt(
+      Math.pow(original[i] - current[i], 2)
+      + Math.pow(original[i + 1] - current[i + 1], 2)
+      + Math.pow(original[i + 2] - current[i + 2], 2)
+    )
+    sum += diff
+  }
+  return sum;
+}
+
+function getMaxDiff(original) {
+  let sum = 0;
+  for (let i = 0; i < original.length; i += 4) {
+    sum += Math.sqrt(
+      Math.pow(original[i], 2)
+      + Math.pow(original[i + 1], 2)
+      + Math.pow(original[i + 2], 2)
+    );
   }
   return sum;
 }
