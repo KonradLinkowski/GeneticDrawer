@@ -2,16 +2,41 @@ const $canvas = document.querySelector("#genetic-canvas");
 const $image = document.getElementById("genetic-image");
 const $matchSpan = document.querySelector("#match_percentage");
 const $genSpan = document.querySelector("#gen_count");
+const $probabilityInput = document.getElementById("probability-input");
+const $probabilityDisplay = document.getElementById("probability-display");
+const $resetRatioBtn = document.getElementById("reset-ratio");
 
 const ctx = $canvas.getContext("2d");
 const helpCanvas = document.createElement("canvas");
 const helpContext = helpCanvas.getContext("2d");
 
+const refreshSlider = () => {
+  $probabilityDisplay.innerText = `◯/△ ratio: ${circleRatio * 100}%`;
+  $probabilityInput.value = circleRatio * 100; 
+}
+
 let mainImageData = null;
+let circleRatio = localStorage.getItem('ratio') ?? 0.5;
+refreshSlider();
 
 $image.addEventListener('load', () => {
   handleLoad($image);
 });
+
+$probabilityInput.addEventListener('change', (value) => {
+  circleRatio = value.target.value / 100;
+  setSlider();
+});
+
+$resetRatioBtn.addEventListener('click', () => {
+  circleRatio = 0.5;
+  setSlider();
+});
+
+const setSlider = () => {
+  localStorage.setItem('ratio', circleRatio);
+  refreshSlider();
+}
 
 $image.src = './assets/img/sunflower.jpg'
 
@@ -142,7 +167,7 @@ function genetic() {
     for (let i = 0; i < olds.length; i++) {
       helpContext.putImageData(olds[i].imageData, 0, 0);
       const color = getRandomColor();
-      if (Math.random() < 0.5) {
+      if (Math.random() < circleRatio) {
         drawCircle(
           helpContext,
           color,
