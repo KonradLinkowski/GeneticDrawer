@@ -33,6 +33,27 @@ body {
   display: flex;
 }
 
+.settings-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.range-container {
+  display: flex;
+}
+
+.display-range-container {
+  display: flex;
+  align-items: center;
+}
+
+#reset-ratio {
+  margin-left: 10px;
+  cursor: pointer;
+  color: #007bff;
+}
+
 .container {
   width: 45rem;
   max-width: 100%;

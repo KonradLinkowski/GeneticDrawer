@@ -22,6 +22,19 @@
 		<p>Generation: <span id="gen_count"></span></p>
 	</div>
 	<div class="container">
+		<div class="settings-container">
+			<div class="range-container">
+				<span>Draw more △</span>
+				<input type="range" id="probability-input" min="0" max="100">
+				<span>Draw more ◯</span>
+			</div>
+			<div class="display-range-container">
+				<p id="probability-display"></p>
+				<p id="reset-ratio">reset</p>
+			</div>
+		</div>
+	</div>
+	<div class="container">
 		<div class="dropzone" id="dropzone">
 			<label for="files" class="dropzone-container">
 				<div class="file-icon">+</div>
